@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CalcForge</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Styles (order matters: tokens → layout → components) -->
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+
+  <!-- math.js (loaded before ES modules so window.math is available) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+</head>
+<body>
+
+  <div class="cf-app">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="brand">Calc<span>Forge</span></div>
+      <div class="modes">
+        <button class="mbtn active" data-mode="learn">Learn</button>
+        <button class="mbtn"        data-mode="fast">Fast</button>
+        <button class="mbtn"        data-mode="advanced">Advanced</button>
+      </div>
+    </div>
+
+    <!-- 3-panel grid -->
+    <div class="grid">
+
+      <!-- Panel 1: Input -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="ph-dot"></div>
+          <div class="ph-label">Input</div>
+        </div>
+        <div class="panel-body">
+
+          <div class="editor-wrap">
+            <input
+              id="expr-input"
+              type="text"
+              value="2^3^2"
+              placeholder="Type expression…"
+              spellcheck="false"
+              autocomplete="off"
+            />
+            <div class="sugg-bar" id="sugg-bar"></div>
+          </div>
+
+          <!-- Quick-insert buttons (data-insert drives behavior in input-panel.js) -->
+          <div class="qbtns">
+            <button class="qb" data-insert="sqrt(">sqrt(</button>
+            <button class="qb" data-insert="sin(">sin(</button>
+            <button class="qb" data-insert="cos(">cos(</button>
+            <button class="qb" data-insert="log(">log(</button>
+            <button class="qb" data-insert="pi">π</button>
+            <button class="qb" data-insert="^">xʸ</button>
+            <button class="qb" data-insert="(">()</button>
+            <button class="qb" data-insert="abs(">|x|</button>
+          </div>
+
+          <div>
+            <div class="sec-label">History</div>
+            <div class="hist-list" id="hist-list"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Panel 2: Result -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="ph-dot"></div>
+          <div class="ph-label">Result</div>
+        </div>
+        <div class="panel-body" style="justify-content: space-between">
+
+          <div class="result-area">
+            <div class="result-num" id="result-num">—</div>
+            <div class="result-expr" id="result-expr"></div>
+          </div>
+
+          <div>
+            <div class="sec-label">Exponent Associativity</div>
+            <div class="assoc-wrap">
+              <button class="assoc-btn active" id="btn-right">Right (standard)</button>
+              <div class="assoc-divider"></div>
+              <button class="assoc-btn" id="btn-left">Left (alt)</button>
+            </div>
+          </div>
+
+          <div id="ambiguity-section" style="display:none">
+            <div class="sec-label">Ambiguity Warning</div>
+            <div class="amb-box" id="amb-box"></div>
+          </div>
+
+          <div class="angle-wrap">
+            <div class="sec-label">Angle Mode</div>
+            <div class="angle-toggle-track">
+              <div class="angle-pill" id="angle-pill"></div>
+              <button class="angle-btn active" id="btn-deg">DEG</button>
+              <button class="angle-btn" id="btn-rad">RAD</button>
+            </div>
+            <div class="angle-legend" id="angle-legend">Trig functions use 360° for a full circle.</div>
+          </div>
+
+          <div class="unit-circle-wrap">
+            <div class="unit-circle-label">Unit Circle</div>
+            <svg width="148" height="148" viewBox="0 0 148 148">
+              <line x1="4"  y1="74" x2="142" y2="74"  stroke="var(--cf-border2)" stroke-width="0.5"/>
+              <line x1="74" y1="144" x2="74" y2="6"   stroke="var(--cf-border2)" stroke-width="0.5"/>
+              <circle cx="74" cy="74" r="54" fill="none" stroke="var(--cf-border)" stroke-width="0.5"/>
+              <text id="uc-0"   x="136" y="78"  font-family="var(--cf-font-mono)" font-size="9" fill="var(--cf-text2)" text-anchor="middle">0°</text>
+              <text id="uc-90"  x="74"  y="12"  font-family="var(--cf-font-mono)" font-size="9" fill="var(--cf-text2)" text-anchor="middle">90°</text>
+              <text id="uc-180" x="10"  y="78"  font-family="var(--cf-font-mono)" font-size="9" fill="var(--cf-text2)" text-anchor="middle">180°</text>
+              <text id="uc-270" x="74"  y="143" font-family="var(--cf-font-mono)" font-size="9" fill="var(--cf-text2)" text-anchor="middle">270°</text>
+              <circle id="uc-point" cx="128" cy="74" r="5" fill="var(--cf-gold)" opacity="0" style="transition:all 0.3s"/>
+              <line   id="uc-line"  x1="74" y1="74" x2="128" y2="74" stroke="var(--cf-gold)" stroke-width="1" stroke-dasharray="3 2" opacity="0" style="transition:all 0.3s"/>
+              <path   id="uc-arc"   d="" fill="none" stroke="var(--cf-gold-dim)" stroke-width="1" opacity="0" style="transition:opacity 0.3s"/>
+            </svg>
+            <div class="uc-badge" id="uc-badge"></div>
+          </div>
+
+          <div>
+            <div class="sec-label">Try these</div>
+            <div class="qbtns" id="quick-examples"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Panel 3: Insight -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="ph-dot"></div>
+          <div class="ph-label">Insight</div>
+        </div>
+        <div class="panel-body" id="insight-panel">
+          <div class="fast-msg">Loading…</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- App entry point (ES module) -->
+  <script type="module" src="app.js"></script>
+
+  <!-- Quick example buttons (wired after DOM ready) -->
+  <script>
+    const EXAMPLES = ['4^5^3', 'sqrt(144)', 'sin(45)', '(2+3)*4^2', 'log(1000)'];
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('quick-examples');
+      EXAMPLES.forEach(ex => {
+        const btn = document.createElement('button');
+        btn.className = 'qb';
+        btn.textContent = ex;
+        btn.addEventListener('click', () => {
+          document.getElementById('expr-input').value = ex;
+          document.getElementById('expr-input').dispatchEvent(new Event('input'));
+        });
+        container.appendChild(btn);
+      });
+    });
+  </script>
+
+</body>
+</html>

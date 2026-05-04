@@ -1,0 +1,76 @@
+/* CalcForge — Design Tokens */
+
+:root {
+  /* Dark mode (default) */
+  --cf-bg: #0a0a0a;
+  --cf-surface: #141414;
+  --cf-surface2: #1c1c1c;
+  --cf-border: #2a2a2a;
+  --cf-border2: #3a3a3a;
+
+  --cf-gold: #e6c410;
+  --cf-gold-dim: #a88d0b;
+  --cf-gold-bg: rgba(230, 196, 16, 0.08);
+  --cf-gold-bg2: rgba(230, 196, 16, 0.14);
+
+  --cf-text: #f0ece0;
+  --cf-text2: #9a9488;
+  --cf-text3: #5a5650;
+
+  --cf-red: #e05050;
+  --cf-red-bg: rgba(224, 80, 80, 0.10);
+  --cf-warn: #d4882a;
+  --cf-warn-bg: rgba(212, 136, 42, 0.10);
+  --cf-green: #4caf7d;
+  --cf-green-bg: rgba(76, 175, 125, 0.10);
+
+  --cf-radius-sm: 6px;
+  --cf-radius-md: 8px;
+  --cf-radius-lg: 12px;
+  --cf-radius-xl: 16px;
+
+  --cf-font-ui: 'Inter', system-ui, sans-serif;
+  --cf-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --cf-bg: #faf8f2;
+    --cf-surface: #ffffff;
+    --cf-surface2: #f0ece0;
+    --cf-border: #ddd8c8;
+    --cf-border2: #ccc6b0;
+
+    --cf-gold: #9a7c00;
+    --cf-gold-dim: #c4a010;
+    --cf-gold-bg: rgba(154, 124, 0, 0.07);
+    --cf-gold-bg2: rgba(154, 124, 0, 0.13);
+
+    --cf-text: #1a1810;
+    --cf-text2: #6a6455;
+    --cf-text3: #aaa090;
+
+    --cf-red: #c03030;
+    --cf-red-bg: rgba(192, 48, 48, 0.08);
+    --cf-warn: #9a5c10;
+    --cf-warn-bg: rgba(154, 92, 16, 0.08);
+    --cf-green: #2e7d52;
+    --cf-green-bg: rgba(46, 125, 82, 0.08);
+  }
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--cf-font-ui);
+  background: var(--cf-bg);
+  color: var(--cf-text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
